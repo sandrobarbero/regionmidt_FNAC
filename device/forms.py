@@ -4,4 +4,4 @@ from .models import Device
 class DeviceForm(ModelForm):
     class Meta:
         model = Device
-        fields = ['hostname', 'macAddress', 'ipAddress', 'serialNumber', 'role', 'type_category', 'location', 'notes', 'floor']
+        fields = ['hostname', 'mac_Address', 'ip_Address', 'serial_Number', 'role', 'type_or_category', 'location', 'notes', 'floor']

@@ -1,0 +1,14 @@
+{% extends 'device/base.html' %}
+
+{% block content %}
+Current devices
+<ul>
+  {% for device in devices %}
+  <li>
+    <a href="{% url 'viewdevice' device.id %}">
+    {{ device.hostname }}
+    </a>
+  </li>
+  {% endfor %}
+  </ul>
+{% endblock %}

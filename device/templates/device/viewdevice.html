@@ -6,12 +6,14 @@
 
 <h2>{{ error }}</h2>
 
+<h1>{{ device }}</h1>
 
 
+{% if user == device.user %}
 <form method="POST">
   {% csrf_token %}
 {{ form.as_p }}
-<button type="submit">Save</button>
+<button type="submit">Update</button>
 </form>
 
 
@@ -20,5 +22,8 @@
 <button type="submit">Delete</button>
 </form>
 
+{% else %}
+{{ form.as_p }}
+{% endif %}
 
 {% endblock %}

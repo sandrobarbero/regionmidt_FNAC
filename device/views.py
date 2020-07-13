@@ -7,6 +7,10 @@ from .forms import DeviceForm
 from .models import Device
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
+from django.views import generic
+#from django.views.generic.detail import DetailView
+#from django.views.generic.list import ListView
+#from django.views.generic.edit import FormMixin
 
 def home(request):
     return render(request, 'device/home.html')
@@ -42,8 +46,7 @@ def loginuser(request):
             return render(request, 'device/loginuser.html', {'form':AuthenticationForm(), 'error': ' Username and password did not match'})
         else:
             login(request, user)
-            return redirect('home')
-            #return redirect('createdevice')
+            return redirect('currentdevices')
 
 
 @login_required
@@ -56,21 +59,28 @@ def createdevice(request):
             newdevice = form.save(commit=False) # to not save in the DB
             newdevice.user = request.user # add user info for the new todo
             newdevice.save() # finally save it in the DB
-            #return render(request, 'todo/currenttodos.html')
-            return redirect('home') # need to check!
-            #return redirect('currentdevices')
+            return redirect('currentdevices')
         except ValueError:
             return render(request, 'device/createdevice.html', {'form':DeviceForm(), 'error': 'Bad data passed in. Try again'})
 
-@login_required
+'''@login_required
 def currentdevices(request):
     #devices = Device.objects.filter(user=request.user)
     devices = request.user.devices.all()
-    return render(request, 'device/currentdevices.html', {'devices':devices})
+    return render(request, 'device/currentdevices.html', {'devices':devices})'''
+
+class CurrentdevicesView(generic.ListView):
+    model = Device
+    template_name = 'device/currentdevices.html'
+    context_object_name = 'devices'
+
+    '''def get_queryset(self):
+        return Device.objects.all()'''
 
 @login_required
 def viewdevice(request, device_pk):
-    device = get_object_or_404(Device, pk=device_pk, user=request.user)
+    #device = get_object_or_404(Device, pk=device_pk, user=request.user) #user restriction
+    device = get_object_or_404(Device, pk=device_pk)
     if request.method == 'GET':
         form = DeviceForm(instance=device)
         return render(request, 'device/viewdevice.html', {'device':device, 'form':form})
@@ -81,6 +91,13 @@ def viewdevice(request, device_pk):
             return redirect('currentdevices')
         except ValueError:
             return render(request, 'device/viewdevice.html', {'device':device, 'form':form, ' error': 'Bad info'})
+
+'''class DeviceView(FormMixin, DetailView):
+    model = Device
+    template_name = 'device/viewdevice.html'
+    context_object_name = 'device'
+    form_class = DeviceForm'''
+
 
 @login_required
 def deletedevice(request, device_pk):

@@ -1,0 +1,19 @@
+{% extends 'device/base.html' %}
+
+{% block content %}
+
+
+
+<h2>{{ error }}</h2>
+<h1>{{ device }}</h1>
+
+
+
+<form method="POST">
+  {% csrf_token %}
+<p>Are you sure you want to delete the device "{{ device.hostname }}"?</p>
+<input type="submit" value="Confirm">
+</form>
+
+
+{% endblock %}

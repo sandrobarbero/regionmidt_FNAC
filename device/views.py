@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, reverse
+from django.urls import reverse_lazy
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.db import IntegrityError
@@ -10,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.views import generic
 #from django.views.generic.detail import DetailView
 #from django.views.generic.list import ListView
-#from django.views.generic.edit import FormMixin
+#from django.views.generic.edit import FormMixin, FormView
 
 def home(request):
     return render(request, 'device/home.html')
@@ -24,7 +25,7 @@ def signupuser(request):
                 user = User.objects.create_user(request.POST['username'], password=request.POST['password1'])
                 user.save()
                 login(request, user)
-                return redirect('home') #need to verify!
+                return redirect('currentdevices')
             except IntegrityError:
                 return render(request, 'device/signupuser.html', {'form':UserCreationForm(), 'error': 'This user already taken. Please choose another username'})
 
@@ -49,19 +50,38 @@ def loginuser(request):
             return redirect('currentdevices')
 
 
-@login_required
+'''@login_required
 def createdevice(request):
     if request.method == 'GET':
         return render(request, 'device/createdevice.html', {'form':DeviceForm()})
     else:
         try:
             form = DeviceForm(request.POST)
-            newdevice = form.save(commit=False) # to not save in the DB
-            newdevice.user = request.user # add user info for the new todo
-            newdevice.save() # finally save it in the DB
+            form.instance.user = request.user # add user info for the new device
+            newdevice = form.save(commit=True) # not to save in the DB
+            # newdevice.user = request.user # add user info for the new device
+            # newdevice.save() # finally save it in the DB
             return redirect('currentdevices')
         except ValueError:
-            return render(request, 'device/createdevice.html', {'form':DeviceForm(), 'error': 'Bad data passed in. Try again'})
+            return render(request, 'device/createdevice.html', {'form':form, 'error': 'Bad data passed in. Try again'})'''
+
+class CreatedeviceView(generic.CreateView):
+    model = Device
+    template_name = 'device/createdevice.html'
+    context_object_name = 'device'
+    form_class = DeviceForm
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+    '''def get_initial(self):
+        initial = super().get_initial()
+        initial['user'] = self.request.user.pk
+        return initial'''
+
+    def get_success_url(self):
+        return reverse('viewdevice', kwargs={'pk': self.object.pk})
 
 '''@login_required
 def currentdevices(request):
@@ -74,10 +94,8 @@ class CurrentdevicesView(generic.ListView):
     template_name = 'device/currentdevices.html'
     context_object_name = 'devices'
 
-    '''def get_queryset(self):
-        return Device.objects.all()'''
 
-@login_required
+'''@login_required
 def viewdevice(request, device_pk):
     #device = get_object_or_404(Device, pk=device_pk, user=request.user) #user restriction
     device = get_object_or_404(Device, pk=device_pk)
@@ -90,18 +108,42 @@ def viewdevice(request, device_pk):
             form.save()
             return redirect('currentdevices')
         except ValueError:
-            return render(request, 'device/viewdevice.html', {'device':device, 'form':form, ' error': 'Bad info'})
+            return render(request, 'device/viewdevice.html', {'device':device, 'form':form, ' error': 'Bad info'})'''
 
-'''class DeviceView(FormMixin, DetailView):
+class DeviceView(generic.DetailView):
     model = Device
     template_name = 'device/viewdevice.html'
     context_object_name = 'device'
-    form_class = DeviceForm'''
+    form_class = DeviceForm
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = DeviceForm(instance=self.object)
+        #context['form'].fields.widget.attrs['readonly'] = True
+        #context['form'] = DeviceForm(instance=context['device'])
+        return context
 
-@login_required
+class UpdateDeviceView(generic.UpdateView):
+    model = Device
+    template_name = 'device/updatedevice.html'
+    context_object_name = 'device'
+    form_class = DeviceForm
+
+    def get_success_url(self):
+        return reverse('viewdevice', kwargs={'pk': self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+'''@login_required
 def deletedevice(request, device_pk):
     device = get_object_or_404(Device, pk=device_pk, user=request.user)
     if request.method == 'POST':
         device.delete()
-        return redirect('currentdevices')
+        return redirect('currentdevices')'''
+
+class DeleteDeviceView(generic.DeleteView):
+    model = Device
+    template_name = 'device/deletedevice.html'
+    success_url = reverse_lazy('currentdevices')

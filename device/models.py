@@ -39,7 +39,7 @@ class Device(models.Model):
     def clean(self):
         super().clean()
         if self.floor > self.location.number_floors:
-            raise ValidationError('Invalid floor number') #check how to add proper validation errors
+            raise ValidationError({'floor': ['Invalid floor number: higher than number of floors of the selected building']})
 
     def __str__(self):
         return self.hostname

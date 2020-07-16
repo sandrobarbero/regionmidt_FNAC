@@ -1,0 +1,40 @@
+{% extends 'device/base.html' %}
+
+{% block content %}
+
+
+
+<h2>{{ error }}</h2>
+<h1>{{ device }}</h1>
+
+{% comment %}<!-- <h2>{{ form }}</h2> -->{% endcomment %}
+
+{% if user == device.user %}
+{% comment %}<!-- <form method="POST" action="{% url 'updatedevice' device.id %}"> -->{% endcomment %}
+{% comment %}<!-- <form method="POST"> -->{% endcomment %}
+{% comment %}<!-- <form method="POST" action="{% url 'updatedevice' device.id %}">
+  {% csrf_token %}
+{{ form.as_p }}
+<button type="submit">Update</button>
+</form> -->{% endcomment %}
+
+<form method="POST">
+  {% csrf_token %}
+{{ form.as_p }}
+</form>
+
+<a href="{% url 'updatedevice' device.id %}">Edit this device</a>
+<br>
+<a href="{% url 'deletedevice' device.id %}">Delete this device</a>
+
+
+{% comment %}<!-- <form method="POST" action="{% url 'deletedevice' device.id %}">
+  {% csrf_token %}
+<button type="submit">Delete</button>
+</form> -->{% endcomment %}
+
+{% else %}
+{{ form.as_p }}
+{% endif %}
+
+{% endblock %}

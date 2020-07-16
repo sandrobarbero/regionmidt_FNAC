@@ -1,40 +1,35 @@
-{% extends 'device/base.html' %}
+{% extends "device/base.html" %}
+{% load bootstrap4 %}
 
 {% block content %}
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5">
+            <h2>{{ device.hostname }}</h2>
+        </div>
+    </div>
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5">
+            {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endif %}
+            {% if user == device.user %}
+                <form method="POST">
+                    <div class="form-group">
+                        <b>{% bootstrap_form form %}</b>
+                    </div>
+                    <a href="{% url 'updatedevice' device.id %}" class="btn btn-warning">Edit this device</a>
+                    <a href="{% url 'deletedevice' device.id %}" class="btn btn-danger">Delete this device</a>
+                </form>
+            {% else %}
+            <div class="form-group">
+                <b>{% bootstrap_form form %}</b>
+            </div>
+            {% endif %}
+        </div>
+    </div>
 
 
-
-<h2>{{ error }}</h2>
-<h1>{{ device }}</h1>
-
-{% comment %}<!-- <h2>{{ form }}</h2> -->{% endcomment %}
-
-{% if user == device.user %}
-{% comment %}<!-- <form method="POST" action="{% url 'updatedevice' device.id %}"> -->{% endcomment %}
-{% comment %}<!-- <form method="POST"> -->{% endcomment %}
-{% comment %}<!-- <form method="POST" action="{% url 'updatedevice' device.id %}">
-  {% csrf_token %}
-{{ form.as_p }}
-<button type="submit">Update</button>
-</form> -->{% endcomment %}
-
-<form method="POST">
-  {% csrf_token %}
-{{ form.as_p }}
-</form>
-
-<a href="{% url 'updatedevice' device.id %}">Edit this device</a>
-<br>
-<a href="{% url 'deletedevice' device.id %}">Delete this device</a>
-
-
-{% comment %}<!-- <form method="POST" action="{% url 'deletedevice' device.id %}">
-  {% csrf_token %}
-<button type="submit">Delete</button>
-</form> -->{% endcomment %}
-
-{% else %}
-{{ form.as_p }}
-{% endif %}
 
 {% endblock %}

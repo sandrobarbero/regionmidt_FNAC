@@ -17,19 +17,6 @@ class Device(models.Model):
     serial_Number = models.CharField(max_length=16, unique=True)
     role = models.CharField(max_length=20)
     created = models.DateTimeField(auto_now_add=True)
-
-    '''PRINTER = 'PRT'
-    PLC = 'PLC'
-    SECURITYCAMERA = 'SC'
-
-    TYPE_CATEGORY_CHOICES = [
-        (PRINTER, 'printer'),
-        (PLC, 'plc'),
-        (SECURITYCAMERA, 'security camera'),
-    ]'''
-    #type_category = models.CharField(max_length=15, choices=TYPE_CATEGORY_CHOICES)
-
-    #location = models.TextField(blank=True) #probably need to change to a FormField
     type_or_category = models.ForeignKey('Category', related_name='devices', on_delete=models.CASCADE)
     location = models.ForeignKey('Location', related_name='devices', on_delete=models.CASCADE)
     notes = models.TextField(blank=True) #not mandatory

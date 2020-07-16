@@ -11,10 +11,10 @@ class UserProfile(models.Model):
         return self.user.username
 
 class Device(models.Model):
-    hostname = models.CharField(max_length=20)
-    mac_Address = models.CharField(max_length=17)
-    ip_Address = models.GenericIPAddressField(protocol='both', unpack_ipv4=True)
-    serial_Number = models.CharField(max_length=16)
+    hostname = models.CharField(max_length=20, unique=True)
+    mac_Address = models.CharField(max_length=17, unique=True)
+    ip_Address = models.GenericIPAddressField(protocol='both', unpack_ipv4=True, unique=True)
+    serial_Number = models.CharField(max_length=16, unique=True)
     role = models.CharField(max_length=20)
     created = models.DateTimeField(auto_now_add=True)
 

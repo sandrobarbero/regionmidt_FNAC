@@ -119,7 +119,9 @@ class DeviceView(generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = DeviceForm(instance=self.object)
-        #context['form'].fields.widget.attrs['readonly'] = True
+        #context['form'].fields['mac_Address'].widget.attrs['readonly'] = True
+        for value in context['form'].fields:
+            context['form'].fields[value].widget.attrs['disabled'] = True
         #context['form'] = DeviceForm(instance=context['device'])
         return context
 
